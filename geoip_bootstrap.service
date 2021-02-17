@@ -1,0 +1,29 @@
+# Bootstrap installer for MaxMind GeoIP databases
+# (C)2021 Phil Hagen <phil@lewestech.com>
+
+[Unit]
+Description=Bootstrap install MaxMind GeoIP database files
+After=network.target
+# The "Before" line will ensure this bootstrap is run prior to an application or service that requires the
+# GeoIP database files to be installed
+Before=systemd-logind.service getty@tty1.service
+#Before=logstash.service systemd-logind.service getty@tty1.service
+#Before=molochcapture.service systemd-logind.service getty@tty1.service
+
+[Service]
+Type=oneshot
+TTYPath=/dev/tty13
+ExecStartPre=/usr/bin/chvt 13
+ExecStart=/usr/local/bin/geoip_systemd_bootstrap.sh
+ExecStartPost=/usr/bin/chvt 1
+TimeoutStartSec=0
+StandardInput=tty
+TTYVHangup=yes
+TTYVTDisallocate=yes
+
+[Install]
+WantedBy=default.target
+# The "RequiredBy" setting should be the same as the "Before" setting
+RequiredBy=systemd-logind.service getty@tty1.service
+#RequiredBy=logstash.service systemd-logind.service getty@tty1.service
+#RequiredBy=molochcapture.service systemd-logind.service getty@tty1.service
