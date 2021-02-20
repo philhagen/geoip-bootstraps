@@ -13,6 +13,8 @@ geoip_conf_target="/etc/GeoIP.conf"
 
 if [ -f ${geoip_conf_target} ]; then
     # not clobbering existing file
+    echo "ERROR: ${geoip_conf_target} already exists - not overwriting."
+    echo "       If you wish to replace this file, remove it and re-run this script."
     exit
 fi
 
@@ -21,6 +23,14 @@ if ! command -v geoipupdate &> /dev/null ; then
     exit
 else
     geoipupdateversion=$( geoipupdate -V 2>&1 | awk '{print $2}' )
+fi
+
+target_dir=$( dirname ${geoip_conf_target} )
+realpath=$( realpath $0 )
+if [ ! -w ${target_dir} ]; then
+    echo "ERROR: ${target_dir} not writable, so cannot create ${geoip_conf_target}."
+    echo "       You may need to run 'sudo ${realpath}'. Exiting."
+    exit
 fi
 
 echo "Do you want to download the MaxMind GeoIP databases?"
