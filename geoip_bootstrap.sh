@@ -36,7 +36,7 @@ fi
 echo "If you do not already have a MaxMind account, sign up here:"
 echo "  https://www.maxmind.com/en/geolite2/signup"
 echo "Once signed in, generate a license key here:"
-echo "  https://www.maxmind.com/en/accounts/155942/license-key"
+echo "  https://www.maxmind.com/en/accounts/current/license-key"
 echo "You have geoipupdate ${geoipupdateversion}, so ensure you"
 echo "  create a license key for this version."
 echo
