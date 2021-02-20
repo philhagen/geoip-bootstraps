@@ -6,9 +6,9 @@ Description=Bootstrap install MaxMind GeoIP database files
 After=network.target
 # The "Before" line will ensure this bootstrap is run prior to an application or service that requires the
 # GeoIP database files to be installed
-Before=systemd-logind.service getty@tty1.service
-#Before=logstash.service systemd-logind.service getty@tty1.service
-#Before=molochcapture.service systemd-logind.service getty@tty1.service
+Before=systemd-logind.service
+#Before=logstash.service systemd-logind.service
+#Before=molochcapture.service systemd-logind.service
 
 [Service]
 Type=oneshot
@@ -24,6 +24,6 @@ TTYVTDisallocate=yes
 [Install]
 WantedBy=default.target
 # The "RequiredBy" setting should be the same as the "Before" setting
-RequiredBy=systemd-logind.service getty@tty1.service
-#RequiredBy=logstash.service systemd-logind.service getty@tty1.service
-#RequiredBy=molochcapture.service systemd-logind.service getty@tty1.service
+RequiredBy=systemd-logind.service
+#RequiredBy=logstash.service systemd-logind.service
+#RequiredBy=molochcapture.service systemd-logind.service
