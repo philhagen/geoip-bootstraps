@@ -12,10 +12,10 @@
 # - geoipupdate utility on $PATH
 # - template GeoIP.conf.dist identified in ${geoip_conf_template}
 
-if [ -z ${geoip_conf_template ]; then
+if [ -z ${geoip_conf_template} ]; then
     geoip_conf_template="/etc/GeoIP.conf.dist"
 fi
-if [ -z ${geoip_conf_target ]; then
+if [ -z ${geoip_conf_target} ]; then
     geoip_conf_target="/etc/GeoIP.conf"
 fi
 
