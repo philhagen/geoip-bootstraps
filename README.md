@@ -10,7 +10,7 @@ These approaches are intended to be customized and integrated to your own platfo
 
 1. The `geoipupdate` tool must be installed.
 2. A MaxMind account is required.  [Sign up for a free account here](https://www.maxmind.com/en/geolite2/signup).
-3. A MaxMind license key is required.  After signing up for and into your MaxMind account, [generate a license key here](https://www.maxmind.com/en/accounts/155942/license-key).  Note that you'll need to know the version of hte `geoipupdate` utility you'll be using.
+3. A MaxMind license key is required.  After signing up for and into your MaxMind account, [generate a license key here](https://www.maxmind.com/en/accounts/155942/license-key).  Note that you'll need to know the version of the `geoipupdate` utility you'll be using.
 
 ## Method 1: User-initiated Download
 
