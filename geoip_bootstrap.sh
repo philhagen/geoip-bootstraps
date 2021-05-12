@@ -69,14 +69,21 @@ read -p "Enter your MaxMind License Key: " license_key
 
 sed "s/<%ACCOUNT_ID%>/${account_id}/g;s/<%LICENSE_KEY%>/${license_key}/g" ${geoip_conf_template} > ${geoip_conf_target}
 
-geoipupdate > /dev/null 2>&1
+tmpfile=$( mktemp )
+geoipupdate > ${tmpfile} 2>&1
 
 if [ $? -ne 0 ]; then
     echo
     echo "ERROR: geoipupdate command failed.  Removing ${geoip_conf_target}"
+    echo "       The command generated the following output (if any):"
+    echo "=== Begin geoipupdate output ==="
+    cat ${tmpfile}
+    echo "=== End geoipupdate output ==="
     rm -f ${geoip_conf_target}
+    rm -f ${tmpfile}
     exit
 else
+    rm -f ${tmpfile}
     echo "MaxMind GeoIP databases have been installed."
 ### insert any addtional commands that should run after new database files are installed.
 ###         systemctl restart someservice.service
