@@ -19,6 +19,11 @@ if [ -z ${geoip_conf_target} ]; then
     geoip_conf_target="/etc/GeoIP.conf"
 fi
 
+if [[ $EUID -ne 0 ]]; then
+    echo "This script must be run as root.  Exiting."
+    exit 1
+fi
+
 if [ -f ${geoip_conf_target} ]; then
     # not clobbering existing file
     echo "ERROR: ${geoip_conf_target} already exists - not overwriting."
@@ -73,6 +78,8 @@ if [ $? -ne 0 ]; then
     exit
 else
     echo "MaxMind GeoIP databases have been installed."
+### insert any addtional commands that should run after new database files are installed.
+###         systemctl restart someservice.service
     echo
 fi
 
