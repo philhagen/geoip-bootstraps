@@ -6,14 +6,14 @@
 #
 # To use a specified template or target configuration file export the
 # geoip_conf_update and/or geoip_conf_target variables before running this script
-# the /etc/GeoIP.conf.dist and /etc/GeoIP.conf filenames are the defaults
+# the /etc/GeoIP.conf.default and /etc/GeoIP.conf filenames are the defaults
 
 # requires:
 # - geoipupdate utility on $PATH
-# - template GeoIP.conf.dist identified in ${geoip_conf_template}
+# - template GeoIP.conf.default identified in ${geoip_conf_template}
 
 if [ -z ${geoip_conf_template} ]; then
-    geoip_conf_template="/etc/GeoIP.conf.dist"
+    geoip_conf_template="/etc/GeoIP.conf.default"
 fi
 if [ -z ${geoip_conf_target} ]; then
     geoip_conf_target="/etc/GeoIP.conf"
@@ -28,6 +28,12 @@ if [ -f ${geoip_conf_target} ]; then
     # not clobbering existing file
     echo "ERROR: ${geoip_conf_target} already exists - not overwriting."
     echo "       If you wish to replace this file, remove it and re-run this script."
+    exit
+fi
+
+if [ ! -f ${geoip_conf_template} ]; then
+    # no template, so exit
+    echo "ERROR: ${geoip_conf_template} does not exist - exiting."
     exit
 fi
 
@@ -67,32 +73,54 @@ echo
 read -p "Enter your MaxMind Account ID: " account_id
 read -p "Enter your MaxMind License Key: " license_key
 
-sed "s/<%ACCOUNT_ID%>/${account_id}/g;s/<%LICENSE_KEY%>/${license_key}/g" ${geoip_conf_template} > ${geoip_conf_target}
+# The MaxMind updater is finicky... Script will try this many times to update before exiting with a failure
+RETRIES=3
+SUCCESS=0
+while [ ${SUCCESS} -eq 0 ]; do
+    # do this every loop because it'll prevent having a leftover "bad" file stuck in the root
+    sed "s/<%ACCOUNT_ID%>/${account_id}/g;s/<%LICENSE_KEY%>/${license_key}/g" ${geoip_conf_template} > ${geoip_conf_target}
 
-tmpfile=$( mktemp )
-geoipupdate > ${tmpfile} 2>&1
+    tmpfile=$( mktemp )
+    geoipupdate > ${tmpfile} 2>&1
 
-if [ $? -ne 0 ]; then
-    echo
-    echo "ERROR: geoipupdate command failed.  Removing ${geoip_conf_target}"
-    echo "       The command generated the following output (if any):"
-    echo "=== Begin geoipupdate output ==="
-    cat ${tmpfile}
-    echo "=== End geoipupdate output ==="
-    rm -f ${geoip_conf_target}
+    if [ $? -eq 0 ]; then
+        SUCCESS=1
+
+    else
+        RETRIES="$((${RETRIES}-1))"
+
+        rm -f ${geoip_conf_target}
+
+        if [ ${RETRIES} -gt 0 ]; then
+            echo
+            echo "Temporary failure of geoipupdate command.  Waiting 5 seconds to try again."
+            echo "=== Begin geoipupdate output ==="
+            cat ${tmpfile}
+            echo "=== End geoipupdate output ==="
+            sleep 5
+        else
+            echo
+            echo "ERROR: geoipupdate command failed.  Removing ${geoip_conf_target}"
+            echo "       You may have provided an invalid Account ID and/or License Key."
+            echo "       If these were confirmed correct, wait a few minutes and run this"
+            echo "       command again."
+            rm -f ${geoip_conf_target}
+            exit
+        fi
+    fi
+ 
     rm -f ${tmpfile}
-    exit
-else
-    rm -f ${tmpfile}
-    echo "MaxMind GeoIP databases have been installed."
-### insert any addtional commands that should run after new database files are installed.
+done
+
+echo "MaxMind GeoIP databases have been installed."
+echo
+### Insert any addtional commands that should run after new database files are installed.
+### For example:
 ###         systemctl restart someservice.service
-    echo
-fi
 
 echo "Do you want to set a weekly cron job that will update the MaxMind GeoIP databases automatically?"
 read -p "Y/N: " install_cron_job
 
-if [ ${install_cron_job} == "Y" ]; then
+if [ ${install_cron_job^^} == "Y" ]; then
     echo "18 4 * * 2 root geoipupdate -f ${geoip_conf_target}" > /etc/cron.d/geoipupdate
 fi

@@ -16,7 +16,7 @@ These approaches are intended to be customized and integrated to your own platfo
 
 This method uses an artificially created file containing a valid GeoIP database shell but no content.  Most GeoIP-using tools will accept this at startup but you should test this on your own.  After starting with the empty GeoIP database files, users run a script which requests their MaxMind user id and license key, then creates a `GeoIP.conf` file and downloads the databases.  This requires the `geoipupdate` tool is installed and configured to use the `GeoIP.conf` file that will be generated.  (You will likely need to adjust paths in the script for it to work on your platform.)  Subsequent runs of the `geoipupdate` tool will retrieve new copies of the GeoIP database files using the same user id and license key.
 
-1. Place the `geoip_bootstrap.sh` and `GeoIP.conf.dist` files on the system.
+1. Place the `geoip_bootstrap.sh` and `GeoIP.conf.default` files on the system.
 2. Install the included [empty.mmdb](empty.mmdb) file wherever a GeoIP database is required.
 3. Tailor the `geoip_bootstrap.sh` script's `geoip_conf_template` and `geoip_conf_target` variables.
 4. Ensure the system does not have a `GeoIP.conf` file in the location specified by `geoip_conf_target`.
@@ -29,7 +29,7 @@ This method uses `systemd` to run a script at boot time which requests the user'
 
 NOTICE: This method WILL hang the boot process for 30 seconds before continuing without creating a `GeoIP.conf` file or downloading the MaxMind databases.
 
-1. Place the `geoip_bootstrap.sh` and `GeoIP.conf.dist` files on the system.
+1. Place the `geoip_bootstrap.sh` and `GeoIP.conf.default` files on the system.
 2. Install the included [empty.mmdb](empty.mmdb) file wherever a GeoIP database is required. (Optional but recommended.)
 3. Tailor the `geoip_bootstrap.sh` script's `geoip_conf_template` and `geoip_conf_target` variables.
 4. Ensure the system does not have a `GeoIP.conf` file in the location specified by `geoip_conf_target`.
