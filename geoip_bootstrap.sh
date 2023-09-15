@@ -121,7 +121,8 @@ echo
 ### For example:
 ###         systemctl restart someservice.service
 
-echo "Do you want to set a weekly cron job that will update the MaxMind GeoIP databases automatically?"
+echo "Do you want to set a weekly cron job that will update the MaxMind GeoIP"
+echo "  databases automatically?"
 read -p "Y/N: " install_cron_job
 
 if [ ${install_cron_job^^} == "Y" ]; then
